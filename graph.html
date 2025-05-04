@@ -23,10 +23,73 @@
     const ctx = canvas.getContext("2d");
 
     // Store the list of node positions
-    let nodes = []; // Each node is an object: { x: ..., y: ... }
+    let nodes = [];
+    let edges = [];
 
     // Radius of each node circle
     const radius = 10;
+
+    // Dragging nodes
+    let isDragging = false;
+    let dragStartIndex = null;
+    let currentMouse = { x: 0, y: 0 };
+    let movedDuringDrag = false;
+    let suppressClick = false;
+
+
+    // Get mouse position relative to canvas
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    // Find index of node near (x, y)
+    function findNodeAt(x, y) {
+      return nodes.findIndex(node =>
+        Math.hypot(node.x - x, node.y - y) < radius
+      );
+    }
+
+    // Mouse down: try to start a drag from a node
+    canvas.addEventListener("mousedown", (e) => {
+      const { x, y } = getMousePos(e);
+      const nodeIndex = findNodeAt(x, y);
+      if (nodeIndex !== -1) {
+        isDragging = true;
+        dragStartIndex = nodeIndex;
+        currentMouse = { x, y };
+        movedDuringDrag = false;
+      }
+    });
+
+    // Mouse move: update temporary line if dragging
+    canvas.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        movedDuringDrag = true;
+        currentMouse = getMousePos(e);
+        draw();
+      }
+    });
+
+    // Mouse up: if ended on a different node, add edge
+    canvas.addEventListener("mouseup", (e) => {
+      if (isDragging) {
+        const { x, y } = getMousePos(e);
+        const endIndex = findNodeAt(x, y);
+        if (endIndex !== -1 && endIndex !== dragStartIndex) {
+          edges.push([dragStartIndex, endIndex]);
+          console.log(`Edge created: ${dragStartIndex} → ${endIndex}`);
+        }
+        isDragging = false;
+        dragStartIndex = null;
+        movedDuringDrag = false;
+        suppressClick = true;
+        draw();
+      }
+    });
 
     // Event listener for mouse clicks on the canvas
     canvas.addEventListener("click", (e) => {
@@ -34,6 +97,11 @@
       const rect = canvas.getBoundingClientRect(); // canvas position in page
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
+
+      if (suppressClick) {
+        suppressClick = false; // reset for future clicks
+        return; // ✅ skip click after drag
+    }
 
       // Add new node at click location
       nodes.push({ x, y });
@@ -45,22 +113,42 @@
       draw();
     });
 
-    // Function to draw all nodes on the canvas
+
+    // Draw everything
     function draw() {
-      // Clear entire canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Loop through each node and draw a circle
-      nodes.forEach((node, index) => {
-        ctx.beginPath();                              // Start drawing a new shape
-        ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI); // Circle at (x, y)
-        ctx.fillStyle = "skyblue";                    // Fill color of node
-        ctx.fill();                                   // Fill the circle
-        ctx.stroke();                                 // Draw the circle outline
+      // Draw edges
+      edges.forEach(([i, j]) => {
+        const a = nodes[i];
+        const b = nodes[j];
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      });
+
+      // Draw drag line
+      if (isDragging && dragStartIndex !== null) {
+        const start = nodes[dragStartIndex];
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(currentMouse.x, currentMouse.y);
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Draw nodes
+      nodes.forEach((node) => {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "skyblue";
+        ctx.fill();
+        ctx.stroke();
       });
     }
 
-    // Initial draw (empty canvas)
     draw();
   </script>
 </body>
