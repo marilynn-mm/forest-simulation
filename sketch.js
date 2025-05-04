@@ -280,5 +280,4 @@ class Tree {
 
 // add tree graphics 
 // implement better logic than isprime 
-// implement more interesting rules
-// black nodes deletion algorithm 
+// toggle between dynamic ecosystem rules! 
