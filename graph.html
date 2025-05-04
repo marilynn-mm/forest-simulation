@@ -3,46 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <title>Node Adder Debug</title>
+
+  <!-- Basic styling to show the canvas and change cursor -->
   <style>
     canvas {
-      border: 1px solid black;
-      cursor: crosshair;
+      border: 1px solid black;     /* Gives the canvas a visible border */
+      cursor: crosshair;           /* Makes the cursor a cross when hovering */
     }
   </style>
 </head>
 <body>
+
+  <!-- Canvas element where we draw the graph -->
   <canvas id="graphCanvas" width="800" height="600"></canvas>
 
   <script>
+    // Get canvas and its 2D drawing context
     const canvas = document.getElementById("graphCanvas");
     const ctx = canvas.getContext("2d");
 
-    let nodes = []; // Store {x, y}
+    // Store the list of node positions
+    let nodes = []; // Each node is an object: { x: ..., y: ... }
+
+    // Radius of each node circle
     const radius = 10;
 
+    // Event listener for mouse clicks on the canvas
     canvas.addEventListener("click", (e) => {
-      const rect = canvas.getBoundingClientRect();
+      // Get mouse position relative to canvas
+      const rect = canvas.getBoundingClientRect(); // canvas position in page
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
+      // Add new node at click location
       nodes.push({ x, y });
+
+      // Log coordinates to console for debugging
       console.log(`Added node at: (${x.toFixed(1)}, ${y.toFixed(1)})`);
 
+      // Redraw all nodes
       draw();
     });
 
+    // Function to draw all nodes on the canvas
     function draw() {
+      // Clear entire canvas before redrawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Loop through each node and draw a circle
       nodes.forEach((node, index) => {
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = "skyblue";
-        ctx.fill();
-        ctx.stroke();
+        ctx.beginPath();                              // Start drawing a new shape
+        ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI); // Circle at (x, y)
+        ctx.fillStyle = "skyblue";                    // Fill color of node
+        ctx.fill();                                   // Fill the circle
+        ctx.stroke();                                 // Draw the circle outline
       });
     }
 
+    // Initial draw (empty canvas)
     draw();
   </script>
 </body>
