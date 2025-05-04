@@ -121,18 +121,17 @@ function createTree(x, y) {
     if (tree.isPrime()) {
       for (let other of trees) {
         if (other !== tree && other.isPrime()) {
-          createEdge(tree, other);
+            createEdge(tree, other, { skipUpdate: true });
         }
       }
     }
-  
     updateAllEdgeCounts();  // 🟢 Also update visuals and health states
   }
 
 // moves particularly is black are incremented one more time. this is because when prime is called, it calls on funciton ____ multiple times which increment black counut multiple times even though its only supoose to be implememted once in this case
 
 // function to create an edge
-function createEdge(a, b) {
+function createEdge(a, b, { skipUpdate = false } = {}) {
     // prevent duplicates
     for (let edge of edges) {
       if ((edge[0] === a.id && edge[1] === b.id) ||
@@ -142,9 +141,12 @@ function createEdge(a, b) {
     }
   
     edges.push([a.id, b.id]);         // Add the connection
-    updateAllEdgeCounts();            // Recompute edge counts + health
     console.log(`🔗 Edge created between Tree ${a.id} and Tree ${b.id}`);
-  }
+    
+    if (!skipUpdate) {
+        updateAllEdgeCounts(); // Recompute edge counts + health
+      }
+    }
 
   function updateAllEdgeCounts() {
     // Reset all edge counts
