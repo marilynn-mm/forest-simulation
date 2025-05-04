@@ -4,6 +4,8 @@ let treeIdCounter = 0;
 let selectedTree = null;
 let logsCreated = 0;
 let movesTaken = 0;
+let forestMode = "prime"; // default mode
+
 
 
 // ===============canvas and draw===================================
@@ -65,6 +67,8 @@ function drawUI() {
 
     fill(0);           // black
     text(`⚫: ${blackCount}`, 10, 120);
+
+    text(`🧠 Rule: ${forestMode}`, 10, 140);
 }
 
 // ===============mouse==========================================
@@ -98,14 +102,22 @@ function getTreeUnderMouse() {
 
 // hover + C is to cut trees
 function keyPressed() {
-    console.log(`Key pressed: ${key}`);
-    if (key === 'c') {
-      let hoveredTree = getTreeUnderMouse();
-      if (hoveredTree) {
-        cutTree(hoveredTree);
-        console.log(`🪓 Tree ${hoveredTree.id} cut down. Total logs: ${logsCreated}`);
-      }
+  console.log(`Key pressed: ${key}`);
+  if (key === 'c') {
+    let hoveredTree = getTreeUnderMouse();
+    if (hoveredTree) {
+      cutTree(hoveredTree);
+      console.log(`🪓 Tree ${hoveredTree.id} cut down. Total logs: ${logsCreated}`);
     }
+  }
+
+  // Toggle forest rules
+  if (key === '1') forestMode = "prime";
+  if (key === '2') forestMode = "coprime";
+  if (key === '3') forestMode = "mod5";
+  if (key === '4') forestMode = "perfectSquare";
+
+  console.log(`🌲 Forest mode set to: ${forestMode}`);
   }
   
 // ===============functions=========================================
@@ -117,14 +129,47 @@ function createTree(x, y) {
     movesTaken++;
     console.log(`🌱 New tree created: ID=${tree.id}, Value=${tree.value}, X=${tree.x}, Y=${tree.y}`);
   
-    // PRIME AUTO-CONNECTION
-    if (tree.isPrime()) {
-      for (let other of trees) {
-        if (other !== tree && other.isPrime()) {
-            createEdge(tree, other, { skipUpdate: true });
-        }
+    // AUTO-CONNECTION based on different game modes
+    switch (forestMode) {
+        case "prime":
+          if (tree.isPrime()) {
+            for (let other of trees) {
+              if (other !== tree && other.isPrime()) {
+                createEdge(tree, other, { skipUpdate: true });
+              }
+            }
+          }
+          break;
+    
+        case "coprime":
+          for (let other of trees) {
+            if (other !== tree && gcd(tree.value, other.value) === 1) {
+              createEdge(tree, other, { skipUpdate: true });
+            }
+          }
+          break;
+    
+        case "mod5":
+          for (let other of trees) {
+            if (other !== tree && (tree.value % 5 === other.value % 5)) {
+              createEdge(tree, other, { skipUpdate: true });
+            }
+          }
+          break;
+    
+        case "perfectSquare":
+          if (isPerfectSquare(tree.value)) {
+            for (let other of trees) {
+              if (other !== tree && isPerfectSquare(other.value)) {
+                createEdge(tree, other, { skipUpdate: true });
+              }
+              if (isPerfectSquare(tree.value) && other !== tree) {
+                createEdge(tree, other, { skipUpdate: true });
+              }
+            }
+          }
+          break;
       }
-    }
     updateAllEdgeCounts();  // 🟢 Also update visuals and health states
   }
 
@@ -171,7 +216,7 @@ function createEdge(a, b, { skipUpdate = false } = {}) {
 
     // Remove black trees that have been isolated for 2 or more turns
     trees = trees.filter(tree => {
-    const isDying = tree.health === 'black' && tree.turnsBlack >= 3;
+    const isDying = tree.health === 'black' && tree.turnsBlack >= 4;
     if (isDying) {
       console.log(`💀 Tree ${tree.id} died from isolation.`);
     }
@@ -277,7 +322,24 @@ class Tree {
 
 }
 
+// ===============helper functions==================================
+
+function gcd(a, b) {
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+    return a;
+  }
+  
+  function isPerfectSquare(n) {
+    return Number.isInteger(Math.sqrt(n));
+  }
+  
 
 // add tree graphics 
 // implement better logic than isprime 
 // toggle between dynamic ecosystem rules! 
+// starting location with five trees!
+
+
+// rule book and purpose on the side draw UI 
