@@ -5,6 +5,7 @@ let selectedTree = null;
 let logsCreated = 0;
 let movesTaken = 0;
 let forestMode = "prime"; // default mode
+let greenTreeImg, yellowTreeImg, redTreeImg, blackTreeImg;
 
 
 
@@ -15,6 +16,13 @@ function setup() {
   textFont('Arial');
   console.log("Canvas initialized.");
 }
+
+function preload() {
+    greenTreeImg = loadImage('tree_green.png');
+    yellowTreeImg = loadImage('tree_yellow.png');
+    redTreeImg = loadImage('tree_red.png');
+    blackTreeImg = loadImage('tree_black.png');
+  }
 
 function draw() {
   background(230);
@@ -91,8 +99,9 @@ function mouseReleased() {
 }
 
 function getTreeUnderMouse() {
+const detectionRadius = 22; // match image size
   for (let tree of trees) {
-    if (dist(mouseX, mouseY, tree.x, tree.y) < 15) {
+    if (dist(mouseX, mouseY, tree.x, tree.y) < detectionRadius) {
       return tree;
     }
   }
@@ -269,26 +278,24 @@ class Tree {
   }
 
   draw() {
-    let c;
+    imageMode(CENTER);
+    let img;
+  
     switch (this.health) {
-      case 'green':  c = color(0, 200, 0); break;
-      case 'yellow': c = color(255, 215, 0); break;
-      case 'red':    c = color(220, 20, 60); break;
-      case 'black':  c = color(0); break;
-      default:       c = color(180);
+      case 'green':  img = greenTreeImg;  break;
+      case 'yellow': img = yellowTreeImg; break;
+      case 'red':    img = redTreeImg;    break;
+      case 'black':  img = blackTreeImg;  break;
+      default:       img = blackTreeImg;  break;
     }
   
-    stroke(0);
-    fill(c);
-    ellipse(this.x, this.y, 30, 30);
-  
-    fill(255);
-    noStroke();
+    image(img, this.x, this.y, 40, 40); // Tree image
+    fill(0);
     textSize(12);
-    textAlign(CENTER, CENTER);
-    text(this.value, this.x, this.y);
-    
+    textAlign(CENTER, TOP);
+    text(this.value, this.x, this.y + 22); // Tree value label below
   }
+  
   
 
   isPrime() {
