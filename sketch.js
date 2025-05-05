@@ -6,16 +6,20 @@ let logsCreated = 0;
 let movesTaken = 0;
 let forestMode = "prime"; // default mode
 let greenTreeImg, yellowTreeImg, redTreeImg, blackTreeImg;
-
+let forestColor, desertColor;
 
 
 // ===============canvas and draw===================================
 
 function setup() {
-  createCanvas(800, 600);
-  textFont('Arial');
-  console.log("Canvas initialized.");
-}
+    let canvas = createCanvas(800, 600);
+    canvas.parent('canvas-container'); // 🔧 Attach the canvas into the #app container
+    textFont('Arial');
+    forestColor = color('#67ac3c');   // light forest green
+    desertColor = color('#E1C16E');   // desert beige
+    console.log("Canvas initialized.");
+  }
+  
 
 function preload() {
     greenTreeImg = loadImage('tree_green.png');
@@ -25,14 +29,18 @@ function preload() {
   }
 
 function draw() {
-  background(230);
+  // Smooth background transition based on # of trees
+  let maxEdges = 20;  // adjust this threshold
+  let amt = constrain(map(edges.length, 0, maxEdges, 0, 1), 0, 1);
+  let bgColor = lerpColor(desertColor, forestColor, amt);
+  background(bgColor);
+
   drawEdges();
 
   for (let tree of trees) {
     tree.draw();
   }
 
-  // draw line while dragging
   if (selectedTree) {
     stroke(0, 100);
     line(selectedTree.x, selectedTree.y, mouseX, mouseY);
@@ -40,6 +48,7 @@ function draw() {
 
   drawUI();
 }
+
 
 function drawUI() {
     fill(50);
@@ -280,7 +289,7 @@ class Tree {
   draw() {
     imageMode(CENTER);
     let img;
-  
+    
     switch (this.health) {
       case 'green':  img = greenTreeImg;  break;
       case 'yellow': img = yellowTreeImg; break;

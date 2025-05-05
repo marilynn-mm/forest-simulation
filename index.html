@@ -2,10 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Forest Graph Simulation</title>
+    <title>Forest Simulation</title>
+    <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <script src="sketch.js"></script>
+    <script src="sketch.js" defer></script>
   </head>
   <body>
+    <div id="app">
+      <!-- Sidebar will be injected-->
+      <div id="sidebar">
+        <h2>Intertwined: A Forest Simulation</h2>
+        <p><em>Use graph and number theory to simulate the complex dependencies of forest ecosystems.</em></p>
+
+        <h3>Modes</h3>
+        <ul>
+            <li><strong>(1) Prime:</strong> Auto-connects to other primes</li>
+            <li><strong>(2) Coprime:</strong> Connects to nodes where GCD = 1</li>
+            <li><strong>(3) Modulo 5:</strong> Connects to nodes with same mod 5 value</li>
+            <li><strong>(4) Perfect Squares:</strong> Connects only to square numbers</li>
+          </ul>
+
+        <h3>What Numbers Mean</h3>
+        <p>Each tree has a number (0 to 99) and connects based on the selected math rule.</p>
+        
+        <h4>The Black Node Rule</h4>
+        <p>If a tree has 0 connections, it turns black. After 2 turns of isolation, it dies and is removed from the forest.</p>
+        <p><em>Project by Marilyn Ma. Discrete Math 2025.</em></p>
+      </div>
+      <!-- Canvas will be injected here by p5.js -->
+      <div id="canvas-container">
+
+    </div>
   </body>
 </html>

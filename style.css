@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  #app {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 40px;
+  }
+
+  #canvas-container {
+    background: #ffffff;
+  }
+  
+  #sidebar {
+    width: 300px;
+    padding: 20px;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #000000;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  #sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  #sidebar h3 {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  
+  #sidebar ul {
+    padding-left: 20px;
+    margin: 0 0 12px 0;
+  }
+  
+  
